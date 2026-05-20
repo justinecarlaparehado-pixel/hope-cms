@@ -1,0 +1,10 @@
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS admin_policy ON users;
+
+CREATE POLICY admin_policy
+ON users
+FOR UPDATE
+USING (
+    user_type = 'SUPERADMIN'
+);
