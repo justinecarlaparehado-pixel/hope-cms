@@ -1,10 +1,14 @@
-CREATE VIEW customer_sales_summary AS
+CREATE OR REPLACE VIEW product_revenue AS
 SELECT
-    c.custno,
-    c.custname,
-    COUNT(s.transno) AS total_orders,
-    COUNT(s.transno) AS total_sales
-FROM customer c
-LEFT JOIN sales s
-ON c.custno = s.custno
-GROUP BY c.custno, c.custname;
+    sd.prodcode,
+    SUM(sd.quantity * ph.price) AS total_revenue
+FROM salesdetail sd
+LEFT JOIN (
+    SELECT DISTINCT ON (product_id)
+        product_id,
+        price
+    FROM price_history
+    ORDER BY product_id, created_at DESC
+) ph
+ON sd.prodcode = ph.product_id
+GROUP BY sd.prodcode;
